@@ -37,13 +37,24 @@ class ColumnStrengthForm extends React.Component<{}, State> {
     this.state = INITIAL_STATE;
   }
 
+  _resetForm = () => this.setState({ formData: INITIAL_STATE.formData });
+
+  _handleChange = (field: string, value: string) =>
+    this.setState(prevState => ({
+      ...prevState,
+      formData: {
+        ...prevState.formData,
+        [field]: value
+      }
+    }));
+
   render() {
     const {
       columnLength,
       // gradeOfSteel,
-      // loadOnColumn,
-      columnBreadth
-      // numberOfFloors,
+      loadOnColumn,
+      columnBreadth,
+      numberOfFloors
       // gradeOfConcrete,
       // selectedReinforcementBar
     } = this.state.formData;
@@ -51,16 +62,14 @@ class ColumnStrengthForm extends React.Component<{}, State> {
     return (
       <Form>
         <Form.Group>
-          <Form.Label>Size of column</Form.Label>
+          <Form.Label>Size of column(In mm)</Form.Label>
           <Form.Row>
             <Col>
               <Form.Control
                 type="number"
                 placeholder="Length"
                 value={columnLength}
-                onChange={(val: any) =>
-                  this.setState(prevState => ({ ...prevState, formData: { ...prevState.formData, columnLength: val } }))
-                }
+                onChange={(event: any) => this._handleChange('columnLength', event.target.value)}
               />
             </Col>
             <Col>
@@ -68,9 +77,7 @@ class ColumnStrengthForm extends React.Component<{}, State> {
                 type="number"
                 placeholder="Breadth"
                 value={columnBreadth}
-                onChange={(val: any) =>
-                  this.setState(prevState => ({ ...prevState, formData: { ...prevState.formData, columnLength: val } }))
-                }
+                onChange={(event: any) => this._handleChange('columnBreadth', event.target.value)}
               />
             </Col>
           </Form.Row>
@@ -119,21 +126,34 @@ class ColumnStrengthForm extends React.Component<{}, State> {
         </Form.Group>
         <Form.Group>
           <Form.Label>Number of floors</Form.Label>
-          <Form.Control type="number" placeholder="Number of floors" />
+          <Form.Control
+            type="number"
+            placeholder="Number of floors"
+            value={numberOfFloors}
+            onChange={(event: any) => this._handleChange('numberOfFloors', event.target.value)}
+          />
         </Form.Group>
         <Form.Group>
           <Form.Label>Load on column</Form.Label>
           <Form.Row>
             <Col>
-              <Form.Control type="number" placeholder="Load on column" defaultValue="60" />
+              <Form.Control
+                type="number"
+                placeholder="Load on column"
+                value={loadOnColumn}
+                onChange={(event: any) => this._handleChange('loadOnColumn', event.target.value)}
+              />
             </Col>
             <Col>
               <span className="line-40">KN per floor</span>
             </Col>
           </Form.Row>
         </Form.Group>
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" className="mr-10">
           Calculate
+        </Button>
+        <Button variant="danger" onClick={this._resetForm}>
+          Reset
         </Button>
       </Form>
     );
