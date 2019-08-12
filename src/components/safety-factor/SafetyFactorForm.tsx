@@ -8,26 +8,30 @@ const concreteStressOptions = [15, 20, 25];
 
 const INITIAL_STATE = {
   formData: {
-    columnLength: '200',
-    gradeOfSteel: '415',
-    loadOnColumn: '60',
-    columnBreadth: '200',
-    numberOfFloors: '1',
-    gradeOfConcrete: '15',
-    selectedReinforcementBar: '4Φ10'
-  }
+    columnLength: 200,
+    loadOnColumn: 60,
+    columnBreadth: 200,
+    numberOfFloors: 1,
+    gradeOfSteel: steelGradeOptions[0],
+    gradeOfConcrete: concreteStressOptions[0],
+    selectedReinforcementBar: reinforcementBarTypes[0].value
+  },
+  strengthOfColumn: null,
+  safetyFactor: null
 };
 
 interface State {
   formData: {
-    columnLength: string;
-    gradeOfSteel: string;
-    loadOnColumn: string;
-    columnBreadth: string;
-    numberOfFloors: string;
-    gradeOfConcrete: string;
+    columnLength: number;
+    gradeOfSteel: number;
+    loadOnColumn: number;
+    columnBreadth: number;
+    numberOfFloors: number;
+    gradeOfConcrete: number;
     selectedReinforcementBar: string;
   };
+  strengthOfColumn: number | null;
+  safetyFactor: number | null;
 }
 
 class ColumnStrengthForm extends React.Component<{}, State> {
@@ -37,7 +41,7 @@ class ColumnStrengthForm extends React.Component<{}, State> {
     this.state = INITIAL_STATE;
   }
 
-  _resetForm = () => this.setState({ formData: INITIAL_STATE.formData });
+  _resetForm = () => this.setState({ formData: INITIAL_STATE.formData, strengthOfColumn: null, safetyFactor: null });
 
   _handleChange = (field: string, value: string) =>
     this.setState(prevState => ({
@@ -48,15 +52,37 @@ class ColumnStrengthForm extends React.Component<{}, State> {
       }
     }));
 
+  _calculateSafetyFactor = () => {
+    const { columnLength, columnBreadth, gradeOfSteel, gradeOfConcrete, loadOnColumn } = this.state.formData;
+    const reinforcementBarArea = this._getReinforcementBarArea();
+    const concreteArea = +columnLength * +columnBreadth - reinforcementBarArea;
+
+    const strengthOfColumn = 0.4 * +gradeOfConcrete * concreteArea + 0.67 * +gradeOfSteel * reinforcementBarArea;
+
+    this.setState(prevState => ({
+      ...prevState,
+      strengthOfColumn,
+      safetyFactor: strengthOfColumn / +loadOnColumn
+    }));
+  };
+
+  _getReinforcementBarArea = () => {
+    const selectedReinforcementBar = reinforcementBarTypes.find(
+      bar => bar.value === this.state.formData.selectedReinforcementBar
+    );
+
+    return selectedReinforcementBar ? selectedReinforcementBar.area : 0;
+  };
+
   render() {
     const {
       columnLength,
-      // gradeOfSteel,
+      gradeOfSteel,
       loadOnColumn,
       columnBreadth,
-      numberOfFloors
-      // gradeOfConcrete,
-      // selectedReinforcementBar
+      numberOfFloors,
+      gradeOfConcrete,
+      selectedReinforcementBar
     } = this.state.formData;
 
     return (
@@ -68,7 +94,7 @@ class ColumnStrengthForm extends React.Component<{}, State> {
               <Form.Control
                 type="number"
                 placeholder="Length"
-                value={columnLength}
+                value={`${columnLength}`}
                 onChange={(event: any) => this._handleChange('columnLength', event.target.value)}
               />
             </Col>
@@ -76,7 +102,7 @@ class ColumnStrengthForm extends React.Component<{}, State> {
               <Form.Control
                 type="number"
                 placeholder="Breadth"
-                value={columnBreadth}
+                value={`${columnBreadth}`}
                 onChange={(event: any) => this._handleChange('columnBreadth', event.target.value)}
               />
             </Col>
@@ -86,7 +112,11 @@ class ColumnStrengthForm extends React.Component<{}, State> {
           <Form.Label>Grade of concrete</Form.Label>
           <Form.Row>
             <Col>
-              <Form.Control as="select">
+              <Form.Control
+                as="select"
+                value={`${gradeOfConcrete}`}
+                onChange={(event: any) => this._handleChange('gradeOfConcrete', event.target.value)}
+              >
                 {concreteStressOptions.map((opt, index) => (
                   <option key={`concrete-strength-option-${index}`}>{opt}</option>
                 ))}
@@ -103,7 +133,11 @@ class ColumnStrengthForm extends React.Component<{}, State> {
           <Form.Label>Grade of steel</Form.Label>
           <Form.Row>
             <Col>
-              <Form.Control as="select">
+              <Form.Control
+                as="select"
+                value={`${gradeOfSteel}`}
+                onChange={(event: any) => this._handleChange('gradeOfSteel', event.target.value)}
+              >
                 {steelGradeOptions.map((opt, index) => (
                   <option key={`steel-grade-option-${index}`}>{opt}</option>
                 ))}
@@ -118,7 +152,11 @@ class ColumnStrengthForm extends React.Component<{}, State> {
         </Form.Group>
         <Form.Group>
           <Form.Label>Type of reinforcement bar</Form.Label>
-          <Form.Control as="select">
+          <Form.Control
+            as="select"
+            value={`${selectedReinforcementBar}`}
+            onChange={(event: any) => this._handleChange('selectedReinforcementBar', event.target.value)}
+          >
             {reinforcementBarTypes.map((opt, index) => (
               <option key={`reinforcement-bar-type-${index}`}>{opt.value}</option>
             ))}
@@ -129,7 +167,7 @@ class ColumnStrengthForm extends React.Component<{}, State> {
           <Form.Control
             type="number"
             placeholder="Number of floors"
-            value={numberOfFloors}
+            value={`${numberOfFloors}`}
             onChange={(event: any) => this._handleChange('numberOfFloors', event.target.value)}
           />
         </Form.Group>
@@ -140,7 +178,7 @@ class ColumnStrengthForm extends React.Component<{}, State> {
               <Form.Control
                 type="number"
                 placeholder="Load on column"
-                value={loadOnColumn}
+                value={`${loadOnColumn}`}
                 onChange={(event: any) => this._handleChange('loadOnColumn', event.target.value)}
               />
             </Col>
@@ -149,7 +187,7 @@ class ColumnStrengthForm extends React.Component<{}, State> {
             </Col>
           </Form.Row>
         </Form.Group>
-        <Button variant="primary" type="submit" className="mr-10">
+        <Button variant="primary" type="submit" className="mr-10" onClick={this._calculateSafetyFactor}>
           Calculate
         </Button>
         <Button variant="danger" onClick={this._resetForm}>
