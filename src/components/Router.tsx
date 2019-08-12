@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import Apps from './Apps';
 import Header from './Header';
@@ -15,6 +15,7 @@ const Router = () => (
           <Switch>
             <Route exact path={routes.HOME} component={Apps} />
             <Route exact path={routes.SAFETY_FACTOR} component={SafetyFactor} />
+            <Route path="/" render={() => <Redirect to={routes.HOME} />} />
           </Switch>
         </div>
       </BrowserRouter>

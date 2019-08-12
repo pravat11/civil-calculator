@@ -10,16 +10,20 @@ const routeToNameMap = {
   [routes.SAFETY_FACTOR]: 'Safety factor'
 };
 
-const Header = (props: RouteComponentProps<{}>) => (
-  <Navbar bg="primary" variant="dark">
-    <Navbar.Brand>{routeToNameMap[window.location.pathname || routes.HOME]}</Navbar.Brand>
-    <Nav className="mr-auto" />
-    {props.location.pathname !== '/' && (
-      <Link to="/">
-        <Icons name="back" />
-      </Link>
-    )}
-  </Navbar>
-);
+const Header = (props: RouteComponentProps<{}>) => {
+  const currentPath = props.location.pathname.replace(/\/$/, '');
+
+  return (
+    <Navbar bg="primary" variant="dark">
+      <Navbar.Brand>{routeToNameMap[currentPath]}</Navbar.Brand>
+      <Nav className="mr-auto" />
+      {currentPath !== routes.HOME && (
+        <Link to="/">
+          <Icons name="back" />
+        </Link>
+      )}
+    </Navbar>
+  );
+};
 
 export default withRouter(Header);
