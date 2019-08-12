@@ -1,5 +1,6 @@
 {
   "name": "civil-calculator",
+  "homepage": "https://pravat11.github.io/civil-calculator",
   "version": "1.0.0",
   "private": true,
   "author": "Prabhat Gautam <unique.pgautam@gmail.com>",
@@ -7,12 +8,15 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@types/classnames": "^2.2.9",
     "@types/react-router-dom": "^4.3.4",
     "classnames": "^2.2.6",
+    "gh-pages": "^2.1.1",
     "react": "^16.8.6",
     "react-bootstrap": "^1.0.0-beta.10",
     "react-dom": "^16.8.6",
