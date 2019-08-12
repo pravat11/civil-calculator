@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Form, Button, Col } from 'react-bootstrap';
+import { Form, Button, Col, Card } from 'react-bootstrap';
 
 import reinforcementBarTypes from '../../constants/reinforcementBarTypes';
 
@@ -52,18 +52,36 @@ class ColumnStrengthForm extends React.Component<{}, State> {
       }
     }));
 
-  _calculateSafetyFactor = () => {
+  _calculateSafetyFactor = (event: any) => {
+    event.preventDefault();
+
     const { columnLength, columnBreadth, gradeOfSteel, gradeOfConcrete, loadOnColumn } = this.state.formData;
     const reinforcementBarArea = this._getReinforcementBarArea();
     const concreteArea = +columnLength * +columnBreadth - reinforcementBarArea;
 
     const strengthOfColumn = 0.4 * +gradeOfConcrete * concreteArea + 0.67 * +gradeOfSteel * reinforcementBarArea;
 
-    this.setState(prevState => ({
-      ...prevState,
-      strengthOfColumn,
-      safetyFactor: strengthOfColumn / +loadOnColumn
-    }));
+    this.setState(
+      prevState => ({
+        ...prevState,
+        strengthOfColumn,
+        safetyFactor: strengthOfColumn / +loadOnColumn
+      }),
+      this._scrollToBottom
+    );
+  };
+
+  _scrollToBottom = () => {
+    const elem = document.getElementById('mainWrapperElement');
+
+    if (!elem) {
+      return;
+    }
+
+    elem.scroll({
+      behavior: 'smooth',
+      top: elem.scrollHeight - elem.offsetHeight
+    });
   };
 
   _getReinforcementBarArea = () => {
@@ -76,14 +94,18 @@ class ColumnStrengthForm extends React.Component<{}, State> {
 
   render() {
     const {
-      columnLength,
-      gradeOfSteel,
-      loadOnColumn,
-      columnBreadth,
-      numberOfFloors,
-      gradeOfConcrete,
-      selectedReinforcementBar
-    } = this.state.formData;
+      safetyFactor,
+      strengthOfColumn,
+      formData: {
+        columnLength,
+        gradeOfSteel,
+        loadOnColumn,
+        columnBreadth,
+        numberOfFloors,
+        gradeOfConcrete,
+        selectedReinforcementBar
+      }
+    } = this.state;
 
     return (
       <Form>
@@ -193,6 +215,17 @@ class ColumnStrengthForm extends React.Component<{}, State> {
         <Button variant="danger" onClick={this._resetForm}>
           Reset
         </Button>
+        {safetyFactor && strengthOfColumn && (
+          <Card className="mt-20">
+            <Card.Header>Result</Card.Header>
+            <Card.Body>
+              <Card.Title>Strength of column</Card.Title>
+              <Card.Text>{strengthOfColumn.toFixed(2)}</Card.Text>
+              <Card.Title>Safety factor</Card.Title>
+              <Card.Text>{safetyFactor.toFixed(2)}</Card.Text>
+            </Card.Body>
+          </Card>
+        )}
       </Form>
     );
   }

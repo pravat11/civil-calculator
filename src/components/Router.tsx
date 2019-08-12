@@ -8,7 +8,7 @@ import * as routes from '../constants/routes';
 
 const Router = () => (
   <div className="container">
-    <div className="main-wrapper">
+    <div className="main-wrapper overflow-scroll" id="mainWrapperElement">
       <BrowserRouter>
         <Header />
         <div className="p-10">
