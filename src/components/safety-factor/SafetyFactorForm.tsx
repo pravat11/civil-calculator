@@ -55,17 +55,25 @@ class ColumnStrengthForm extends React.Component<{}, State> {
   _calculateSafetyFactor = (event: any) => {
     event.preventDefault();
 
-    const { columnLength, columnBreadth, gradeOfSteel, gradeOfConcrete, loadOnColumn } = this.state.formData;
+    const {
+      columnLength,
+      columnBreadth,
+      gradeOfSteel,
+      gradeOfConcrete,
+      loadOnColumn,
+      numberOfFloors
+    } = this.state.formData;
     const reinforcementBarArea = this._getReinforcementBarArea();
     const concreteArea = +columnLength * +columnBreadth - reinforcementBarArea;
 
     const strengthOfColumn = 0.4 * +gradeOfConcrete * concreteArea + 0.67 * +gradeOfSteel * reinforcementBarArea;
+    const safetyFactor = strengthOfColumn / (+loadOnColumn * numberOfFloors * 1000);
 
     this.setState(
       prevState => ({
         ...prevState,
-        strengthOfColumn,
-        safetyFactor: strengthOfColumn / +loadOnColumn
+        safetyFactor,
+        strengthOfColumn
       }),
       this._scrollToBottom
     );
@@ -220,7 +228,7 @@ class ColumnStrengthForm extends React.Component<{}, State> {
             <Card.Header>Result</Card.Header>
             <Card.Body>
               <Card.Title>Strength of column</Card.Title>
-              <Card.Text>{strengthOfColumn.toFixed(2)}</Card.Text>
+              <Card.Text>{strengthOfColumn.toFixed(2)} N</Card.Text>
               <Card.Title>Safety factor</Card.Title>
               <Card.Text>{safetyFactor.toFixed(2)}</Card.Text>
             </Card.Body>
