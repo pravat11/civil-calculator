@@ -7,7 +7,7 @@ import SafetyFactor from './safety-factor';
 import * as routes from '../constants/routes';
 
 const Router = () => (
-  <div className="container">
+  <div className="container-main">
     <div className="main-wrapper overflow-scroll" id="mainWrapperElement">
       <BrowserRouter>
         <Header />
