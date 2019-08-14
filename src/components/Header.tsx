@@ -14,7 +14,7 @@ const Header = (props: RouteComponentProps<{}>) => {
   const currentPath = props.location.pathname.replace(/\/$/, '');
 
   return (
-    <Navbar bg="primary" variant="dark">
+    <Navbar bg="primary" variant="dark" id="titleBarElement">
       <Navbar.Brand>{routeToNameMap[currentPath]}</Navbar.Brand>
       <Nav className="mr-auto" />
       {currentPath !== routes.HOME && (
