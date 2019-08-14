@@ -34,8 +34,12 @@ interface State {
   safetyFactor: number | null;
 }
 
-class ColumnStrengthForm extends React.Component<{}, State> {
-  constructor(props: {}) {
+interface SafetyFactorFormProps {
+  scrollToBottom: () => void;
+}
+
+class SafetyFactorForm extends React.Component<SafetyFactorFormProps, State> {
+  constructor(props: SafetyFactorFormProps) {
     super(props);
 
     this.state = INITIAL_STATE;
@@ -75,21 +79,8 @@ class ColumnStrengthForm extends React.Component<{}, State> {
         safetyFactor,
         strengthOfColumn
       }),
-      this._scrollToBottom
+      this.props.scrollToBottom
     );
-  };
-
-  _scrollToBottom = () => {
-    const elem = document.getElementById('mainWrapperElement');
-
-    if (!elem) {
-      return;
-    }
-
-    elem.scroll({
-      behavior: 'smooth',
-      top: elem.scrollHeight - elem.offsetHeight
-    });
   };
 
   _getReinforcementBarArea = () => {
@@ -239,4 +230,4 @@ class ColumnStrengthForm extends React.Component<{}, State> {
   }
 }
 
-export default ColumnStrengthForm;
+export default SafetyFactorForm;

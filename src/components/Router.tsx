@@ -12,6 +12,8 @@ interface State {
 }
 
 class Router extends React.Component<{}, State> {
+  scrollbar: Scrollbars | null = null;
+
   constructor(props: {}) {
     super(props);
 
@@ -31,17 +33,32 @@ class Router extends React.Component<{}, State> {
     this.setState({ bodyHeight: window.innerHeight - titleBarElementHeight });
   };
 
+  _scrollToBottom = () => {
+    if (this.scrollbar) {
+      this.scrollbar.scrollToBottom();
+    }
+  };
+
   render() {
     return (
       <div className="container-main">
         <div className="main-wrapper" id="mainWrapperElement">
           <BrowserRouter>
             <Header />
-            <Scrollbars style={{ height: this.state.bodyHeight }}>
+            <Scrollbars
+              style={{ height: this.state.bodyHeight }}
+              ref={scrollbar => {
+                this.scrollbar = scrollbar;
+              }}
+            >
               <div className="p-10">
                 <Switch>
                   <Route exact path={routes.HOME} component={Apps} />
-                  <Route exact path={routes.SAFETY_FACTOR} component={SafetyFactor} />
+                  <Route
+                    exact
+                    path={routes.SAFETY_FACTOR}
+                    render={() => <SafetyFactor scrollToBottom={this._scrollToBottom} />}
+                  />
                   <Route path="/" render={() => <Redirect to={routes.HOME} />} />
                 </Switch>
               </div>
